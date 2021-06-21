@@ -19,7 +19,7 @@ require (
 	github.com/awslabs/goformation/v4 v4.15.6
 	github.com/buger/goterm v1.0.0
 	github.com/cnabio/cnab-to-oci v0.3.1-beta1
-	github.com/compose-spec/compose-go v0.0.0-20210607122939-5d8ae5f41be5
+	github.com/compose-spec/compose-go v0.0.0-20210616101828-4e2e7e7def77
 	github.com/containerd/console v1.0.2
 	github.com/containerd/containerd v1.5.0
 	github.com/distribution/distribution/v3 v3.0.0-20210316161203-a01c71e2477e
@@ -37,6 +37,7 @@ require (
 	github.com/google/go-cmp v0.5.5
 	github.com/hashicorp/go-multierror v1.1.0
 	github.com/hashicorp/go-uuid v1.0.2
+	github.com/hashicorp/go-version v1.3.0
 	github.com/iancoleman/strcase v0.1.2
 	github.com/joho/godotenv v1.3.0
 	github.com/kr/pty v1.1.8 // indirect
@@ -47,7 +48,7 @@ require (
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/moby/buildkit v0.8.2-0.20210401015549-df49b648c8bf
-	github.com/moby/term v0.0.0-20201110203204-bea5bbe245bf
+	github.com/moby/term v0.0.0-20210610120745-9d4ed1856297
 	github.com/morikuni/aec v1.0.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.0.1

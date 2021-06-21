@@ -21,7 +21,7 @@ package helm
 import (
 	"errors"
 
-	"github.com/docker/compose-cli/api/compose"
+	"github.com/docker/compose-cli/pkg/api"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
 	env "helm.sh/helm/v3/pkg/cli"
@@ -84,6 +84,19 @@ func (hc *Actions) InstallChart(name string, chart *chart.Chart, logger func(for
 	return err
 }
 
+// UpdateChart upgrades chart
+func (hc *Actions) UpdateChart(name string, chart *chart.Chart, logger func(format string, v ...interface{})) error {
+	err := hc.initialize(logger)
+	if err != nil {
+		return err
+	}
+
+	actUpgrade := action.NewUpgrade(hc.Config)
+	actUpgrade.Namespace = hc.Namespace
+	_, err = actUpgrade.Run(name, chart, map[string]interface{}{})
+	return err
+}
+
 // Uninstall uninstall chart
 func (hc *Actions) Uninstall(name string, logger func(format string, v ...interface{})) error {
 	err := hc.initialize(logger)
@@ -110,15 +123,15 @@ func (hc *Actions) Get(name string) (*release.Release, error) {
 }
 
 // ListReleases lists chart releases
-func (hc *Actions) ListReleases() ([]compose.Stack, error) {
+func (hc *Actions) ListReleases() ([]api.Stack, error) {
 	actList := action.NewList(hc.Config)
 	releases, err := actList.Run()
 	if err != nil {
 		return nil, err
 	}
-	result := []compose.Stack{}
+	result := []api.Stack{}
 	for _, rel := range releases {
-		result = append(result, compose.Stack{
+		result = append(result, api.Stack{
 			ID:     rel.Name,
 			Name:   rel.Name,
 			Status: string(rel.Info.Status),
