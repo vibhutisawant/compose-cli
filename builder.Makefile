@@ -74,7 +74,7 @@ cross-compose-plugin:
 	GOOS=linux   GOARCH=arm64 $(GO_BUILD) $(TAGS) -o $(COMPOSE_BINARY)-linux-arm64 ./cmd
 	GOOS=linux   GOARM=6 GOARCH=arm $(GO_BUILD) $(TAGS) -o $(COMPOSE_BINARY)-linux-armv6 ./cmd
 	GOOS=linux   GOARM=7 GOARCH=arm $(GO_BUILD) $(TAGS) -o $(COMPOSE_BINARY)-linux-armv7 ./cmd
-	GOOS=linux   GOARCH=s390x $(GO_BUILD) $(TAGS) -o $(BINARY)-linux-s390x ./cmd
+	GOOS=linux   GOARCH=s390x $(GO_BUILD) $(TAGS) -o $(COMPOSE_BINARY)-linux-s390x ./cmd
 	GOOS=darwin  GOARCH=amd64 $(GO_BUILD) $(TAGS) -o $(COMPOSE_BINARY)-darwin-amd64 ./cmd
 	GOOS=darwin  GOARCH=arm64 $(GO_BUILD) $(TAGS) -o $(COMPOSE_BINARY)-darwin-arm64 ./cmd
 	GOOS=windows GOARCH=amd64 $(GO_BUILD) $(TAGS) -o $(COMPOSE_BINARY)-windows-amd64.exe ./cmd
