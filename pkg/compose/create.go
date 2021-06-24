@@ -284,17 +284,34 @@ func (s *composeService) getCreateOptions(ctx context.Context, p *types.Project,
 	}
 
 	var networkConfig *network.NetworkingConfig
+
 	for _, id := range service.NetworksByPriority() {
 		net := p.Networks[id]
 		config := service.Networks[id]
+		var ipam *network.EndpointIPAMConfig
+		var (
+			ipv4Address string
+			ipv6Address string
+		)
+		if config != nil {
+			ipv4Address = config.Ipv4Address
+			ipv6Address = config.Ipv6Address
+			ipam = &network.EndpointIPAMConfig{
+				IPv4Address: ipv4Address,
+				IPv6Address: ipv6Address,
+			}
+		}
 		networkConfig = &network.NetworkingConfig{
 			EndpointsConfig: map[string]*network.EndpointSettings{
 				net.Name: {
-					Aliases: getAliases(service, config),
+					Aliases:     getAliases(service, config),
+					IPAddress:   ipv4Address,
+					IPv6Gateway: ipv6Address,
+					IPAMConfig:  ipam,
 				},
 			},
 		}
-		break
+		break //nolint:staticcheck
 	}
 
 	ipcmode, err := getMode(ctx, service.Name, service.Ipc)
@@ -629,7 +646,6 @@ MOUNTS:
 func buildContainerMountOptions(p types.Project, s types.ServiceConfig, img moby.ImageInspect, inherit *moby.Container) ([]mount.Mount, error) {
 	var mounts = map[string]mount.Mount{}
 	if inherit != nil {
-
 		for _, m := range inherit.Mounts {
 			if m.Type == "tmpfs" {
 				continue
@@ -651,7 +667,24 @@ func buildContainerMountOptions(p types.Project, s types.ServiceConfig, img moby
 					}
 				}
 			}
-
+			for i, v := range s.Volumes {
+				if v.Target != m.Destination {
+					continue
+				}
+				if v.Source == "" {
+					// inherit previous container's anonymous volume
+					mounts[m.Destination] = mount.Mount{
+						Type:     m.Type,
+						Source:   src,
+						Target:   m.Destination,
+						ReadOnly: !m.RW,
+					}
+					// Avoid mount to be later re-defined
+					l := len(s.Volumes) - 1
+					s.Volumes[i] = s.Volumes[l]
+					s.Volumes = s.Volumes[:l]
+				}
+			}
 		}
 	}
 
@@ -915,6 +948,22 @@ func (s *composeService) ensureNetwork(ctx context.Context, n types.NetworkConfi
 			if n.External.External {
 				return fmt.Errorf("network %s declared as external, but could not be found", n.Name)
 			}
+			var ipam *network.IPAM
+			if n.Ipam.Config != nil {
+				var config []network.IPAMConfig
+				for _, pool := range n.Ipam.Config {
+					config = append(config, network.IPAMConfig{
+						Subnet:     pool.Subnet,
+						IPRange:    pool.IPRange,
+						Gateway:    pool.Gateway,
+						AuxAddress: pool.AuxiliaryAddresses,
+					})
+				}
+				ipam = &network.IPAM{
+					Driver: n.Ipam.Driver,
+					Config: config,
+				}
+			}
 			createOpts := moby.NetworkCreate{
 				// TODO NameSpace Labels
 				Labels:     n.Labels,
@@ -922,6 +971,7 @@ func (s *composeService) ensureNetwork(ctx context.Context, n types.NetworkConfi
 				Options:    n.DriverOpts,
 				Internal:   n.Internal,
 				Attachable: n.Attachable,
+				IPAM:       ipam,
 			}
 
 			if n.Ipam.Driver != "" || len(n.Ipam.Config) > 0 {

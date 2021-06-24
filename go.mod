@@ -19,7 +19,7 @@ require (
 	github.com/awslabs/goformation/v4 v4.15.6
 	github.com/buger/goterm v1.0.0
 	github.com/cnabio/cnab-to-oci v0.3.1-beta1
-	github.com/compose-spec/compose-go v0.0.0-20210616101828-4e2e7e7def77
+	github.com/compose-spec/compose-go v0.0.0-20210623125646-085112c33ee6
 	github.com/containerd/console v1.0.2
 	github.com/containerd/containerd v1.5.0
 	github.com/distribution/distribution/v3 v3.0.0-20210316161203-a01c71e2477e
@@ -48,7 +48,7 @@ require (
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/moby/buildkit v0.8.2-0.20210401015549-df49b648c8bf
-	github.com/moby/term v0.0.0-20210610120745-9d4ed1856297
+	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6
 	github.com/morikuni/aec v1.0.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.0.1
@@ -65,7 +65,7 @@ require (
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/sys v0.0.0-20210331175145-43e1dd70ce54
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/ini.v1 v1.62.0
@@ -88,3 +88,5 @@ replace github.com/jaguilar/vt100 => github.com/tonistiigi/vt100 v0.0.0-20190402
 // with incompatible signature changes. This fork adopt oras-project/oras-go which is up-to-date on containerd 1.5
 // see https://github.com/helm/helm/pull/9675
 replace helm.sh/helm/v3 => github.com/ndeloof/helm/v3 v3.1.0-rc.1.0.20210507084602-d0ceda767d95
+
+replace github.com/compose-spec/compose-go => github.com/ndeloof/compose-go v0.0.0-20210623084147-f0ea5c285885

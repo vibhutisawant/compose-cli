@@ -25,6 +25,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/compose-spec/compose-go/cli"
 	"github.com/compose-spec/compose-go/types"
 	dockercli "github.com/docker/cli/cli"
@@ -177,6 +179,8 @@ func (o *projectOptions) toProject(services []string, po ...cli.ProjectOptionsFn
 
 	project.ApplyProfiles(o.Profiles)
 
+	project.WithoutUnnecessaryResources()
+
 	err = project.ForServices(services)
 	return project, err
 }
@@ -196,8 +200,11 @@ func (o *projectOptions) toProjectOptions(po ...cli.ProjectOptionsFn) (*cli.Proj
 // RootCommand returns the compose command with its child commands
 func RootCommand(contextType string, backend api.Service) *cobra.Command {
 	opts := projectOptions{}
-	var ansi string
-	var noAnsi bool
+	var (
+		ansi    string
+		noAnsi  bool
+		verbose bool
+	)
 	command := &cobra.Command{
 		Short:            "Docker Compose",
 		Use:              "compose",
@@ -228,6 +235,9 @@ func RootCommand(contextType string, backend api.Service) *cobra.Command {
 				}
 				ansi = "never"
 				fmt.Fprint(os.Stderr, aec.Apply("option '--no-ansi' is DEPRECATED ! Please use '--ansi' instead.\n", aec.RedF))
+			}
+			if verbose {
+				logrus.SetLevel(logrus.TraceLevel)
 			}
 			formatter.SetANSIMode(ansi)
 			if opts.WorkDir != "" {
@@ -282,5 +292,7 @@ func RootCommand(contextType string, backend api.Service) *cobra.Command {
 	command.Flags().StringVar(&ansi, "ansi", "auto", `Control when to print ANSI control characters ("never"|"always"|"auto")`)
 	command.Flags().BoolVar(&noAnsi, "no-ansi", false, `Do not print ANSI control characters (DEPRECATED)`)
 	command.Flags().MarkHidden("no-ansi") //nolint:errcheck
+	command.Flags().BoolVar(&verbose, "verbose", false, "Show more output")
+	command.Flags().MarkHidden("verbose") //nolint:errcheck
 	return command
 }
